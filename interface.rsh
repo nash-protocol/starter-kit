@@ -2,16 +2,15 @@
 'use strict';
 // -----------------------------------------------
 // Name: Interface Template
-// Description: RApp with Constructor Interface
+// Description: NP Rapp simple
 // Author: Nicholas Shellabarger
-// Version: 0.0.1 - initial
-// Requires Reach v0.1.8
+// Version: 0.0.2 - initial
+// Requires Reach v0.1.7 (stable)
 // ----------------------------------------------
 export const Particpants = () =>[]
 export const Views = () => []
 export const Api = () => []
-export const main = (map) => {
-  const [ _, _, _, _, _ ] = map
+export const App = (_) => {
   Anybody.publish()
   commit()
   exit()

@@ -5,15 +5,10 @@
 // Description: Reach App using Constructor
 // Author: Nicholas Shellabarger
 // Version: 0.0.1 - initial
-// Requires Reach v0.1.8
+// Requires Reach v0.1.7 (stable)
 // ----------------------------------------------
 import { useConstructor } from 'util.rsh'
-import {
-  Particpants as AppParticpants,
-  Views as AppViews,
-  Api as AppApi,
-  main as template
-} from 'interface.rsh'
+import { Particpants, Views, Api, App } from 'interface.rsh'
 export const main = Reach.App(() => 
-  template(useConstructor(AppParticpants, AppViews, AppApi)));
+  App(useConstructor(Particpants, Views, Api)));
 // ----------------------------------------------
