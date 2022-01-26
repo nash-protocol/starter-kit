@@ -7,7 +7,7 @@
 // Version: 0.0.2 - initial
 // Requires Reach v0.1.7 (stable)
 // ----------------------------------------------
-export const Particpants = () =>[]
+export const Participants = () =>[]
 export const Views = () => []
 export const Api = () => []
 export const App = (_) => {
