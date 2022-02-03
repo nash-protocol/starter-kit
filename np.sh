@@ -1,5 +1,6 @@
 compile () {
-        REACH_VERSION=0.1.7 ./reach compile ${infile:-template}.rsh
+        REACH_VERSION=0.1.7 ./reach compile ${infile:-index}.rsh --install-pkgs
+        REACH_VERSION=0.1.7 ./reach compile ${infile:-index}.rsh
 }
 connector () {
         local i=$( grep -n ${1} -e _ALGO | head -1 | cut '-d:' '-f1' ) 
@@ -11,15 +12,14 @@ eject () {
         _ () {
                 node <(connector "${1}")
         }
-        _ build/${infile:-template}.main.mjs
+        _ build/${infile:-index}.main.mjs
 }
 launch () {
-        #curl -X POST http://localhost:5002/api/v1/launch2 -H 'Content-Type: application/json' -d @<( eject ) 
         curl -X POST https://algoapiv1.herokuapp.com/api/v1/launch2 -H 'Content-Type: application/json' -d @<( eject ) 
 }
 np () {
-        local infile="${1:-template}" 
-        test -f "${infile:-template}.rsh" || return
+        local infile="${1:-index}" 
+        test -f "${infile:-index}.rsh" || return
         main () {
                 test -f "reach" || {
                         curl https://docs.reach.sh/reach -o reach --silent
