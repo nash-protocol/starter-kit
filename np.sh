@@ -17,6 +17,14 @@ eject () {
 launch () {
         curl -X POST https://algoapiv1.herokuapp.com/api/v1/launch2 -H 'Content-Type: application/json' -d @<( eject ) 
 }
+devnet() {
+        local -x REACH_CONNECTOR_MODE=ALGO-devnet
+        ./reach devnet
+}
+run() {
+        local -x REACH_CONNECTOR_MODE=ALGO-devnet
+        node index.mjs index
+}
 np () {
         local infile="${1:-index}" 
         test -f "${infile:-index}.rsh" || return
