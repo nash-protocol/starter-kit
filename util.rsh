@@ -3,7 +3,7 @@
 // -----------------------------------------------
 // Name: Utilities
 // Author: Nicholas Shellabarger
-// Version: 0.0.2 - initial
+// Version: 0.0.3 - fix syntax error
 // Requires Reach v0.1.8
 // -----------------------------------------------
 export const max = ((a, b) => a > b ? a : b)
@@ -39,7 +39,7 @@ export const construct = (Constructor, Verifier) => {
   Constructor
     .publish(
       addr,
-      amt,
+      amt
     )
   require(true)
   Verifier.set(addr)
