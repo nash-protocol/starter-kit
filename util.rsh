@@ -3,7 +3,7 @@
 // -----------------------------------------------
 // Name: Utilities
 // Author: Nicholas Shellabarger
-// Version: 0.0.4 - fix typo
+// Version: 0.0.5 - returns p v a array
 // Requires Reach v0.1.8
 // -----------------------------------------------
 export const max = ((a, b) => a > b ? a : b)
@@ -97,9 +97,5 @@ export const useConstructor = (particpantFunc = () => {}, viewFunc = () => {}, a
   const a = apiFunc()
   init()
   verify(Constructor, Verifier, Contractee)
-  return {
-    p,
-    v,
-    a
-  }
+  return [p, v, a];
 }
