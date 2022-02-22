@@ -1,13 +1,14 @@
 API_ENDPOINT_TESTNET="https://algoapiv1.herokuapp.com"
-compile () {
-        REACH_VERSION=0.1.7 ./reach compile ${infile:-index}.rsh --install-pkgs
-        REACH_VERSION=0.1.7 ./reach compile ${infile:-index}.rsh "${@}"
-}
+TEMPLATE_NAME="lite"
 connector () {
         local i=$( grep -n ${1} -e _ALGO | head -1 | cut '-d:' '-f1' ) 
         local n=$(( $( grep -n ${1} -e _ETH | head -1 | cut '-d:' '-f1' ) - 1 )) 
         sed -n "${i},${n}p" ${1}
-        echo "console.log(JSON.stringify({ALGO:_ALGO}))"
+        echo "console.log(JSON.stringify({ALGO:_ALGO, template: '${TEMPLATE_NAME}'}))"
+}
+compile () {
+        REACH_VERSION=0.1.7 ./reach compile ${infile:-index}.rsh --install-pkgs
+        REACH_VERSION=0.1.7 ./reach compile ${infile:-index}.rsh "${@}"
 }
 eject () {
         _ () {
