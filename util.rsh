@@ -3,7 +3,7 @@
 // -----------------------------------------------
 // Name: Utilities
 // Author: Nicholas Shellabarger
-// Version: 0.0.3 - fix syntax error
+// Version: 0.0.4 - fix typo
 // Requires Reach v0.1.8
 // -----------------------------------------------
 export const max = ((a, b) => a > b ? a : b)
@@ -92,14 +92,14 @@ export const verify = (Constructor, Verifier, Contractee) => {
 }
 export const useConstructor = (particpantFunc = () => {}, viewFunc = () => {}, apiFunc = () => {}) => {
   const [Constructor, Verifier, Contractee] = DefaultParticipants()
-  const particpants = particpantFunc()
-  const views = viewFunc()
-  const api = apiFunc()
+  const p = particpantFunc()
+  const v = viewFunc()
+  const a = apiFunc()
   init()
   verify(Constructor, Verifier, Contractee)
   return {
-    particpants,
-    views,
-    api
+    p,
+    v,
+    a
   }
 }
