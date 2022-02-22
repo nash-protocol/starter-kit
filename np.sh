@@ -22,6 +22,10 @@ compile () {
 }
 eject () {
         _ () {
+                test -f "build/${infile:-index}.main.mjs" || {
+                  reset
+                  compile
+                } &>/dev/null
                 node <(connector "${1}")
         }
         _ build/${infile:-index}.main.mjs
