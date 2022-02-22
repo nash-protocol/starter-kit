@@ -39,6 +39,10 @@ v2-apps() {
   local plan_id="${1}"
   curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/apps" -H 'Content-Type: application/json' -d @<( plan )
 }
+v2-verify() {
+  local plan_id="${1}"
+  curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/verify" -H 'Content-Type: application/json' -d @<( plan )
+}
 v1-launch () {
         curl -X POST "${API_ENDPOINT_TESTNET}/api/v1/launch" -H 'Content-Type: application/json' -d @<( eject ) 
 }
