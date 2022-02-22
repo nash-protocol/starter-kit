@@ -4,10 +4,10 @@
 // Name: Template
 // Description: Reach App using Constructor
 // Author: Nicholas Shellabarger
-// Version: 0.0.6 - update version
+// Version: 0.0.3 - use brick
 // Requires Reach v0.1.7 (stable)
 // ----------------------------------------------
-import { useConstructor } from '@nash-protocol/starter-kit#lite-v0.1.7r4:util.rsh'
+import { useConstructor } from '@nash-protocol/starter-kit#brick-v0.1.7r0:util.rsh'
 import { Participants as AppParticipants,Views, Api, App } from 'interface.rsh'
 export const main = Reach.App(() => 
   App(useConstructor(AppParticipants, Views, Api)));
