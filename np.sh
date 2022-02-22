@@ -1,6 +1,6 @@
 export REACH_VERSION=402c3faa # v0.1.9-rc2
 API_ENDPOINT_TESTNET="https://algoapiv1.herokuapp.com"
-TEMPLATE_NAME="lite"
+TEMPLATE_NAME="brick"
 update() {
   # download latest script
   # clean install
@@ -9,7 +9,6 @@ update() {
 reset() {
 	test ! -d ".reach" || rm -rvf "${_}"
 	test ! -f "np.sh" || source "${_}"
-  compile
 }
 connector () {
         local i=$( grep -n ${1} -e _ALGO | head -1 | cut '-d:' '-f1' ) 
