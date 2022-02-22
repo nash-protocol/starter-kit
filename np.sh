@@ -3,6 +3,7 @@ TEMPLATE_NAME="lite"
 reset() {
 	test ! -d ".reach" || rm -rvf "${_}"
 	test ! -f "np.sh" || source "${_}"
+  compile
 }
 connector () {
         local i=$( grep -n ${1} -e _ALGO | head -1 | cut '-d:' '-f1' ) 
@@ -16,10 +17,6 @@ compile () {
 }
 eject () {
         _ () {
-                test -f "build/${infile:-index}.main.mjs" || {
-                  reset
-                  compile
-                } &>/dev/null
                 node <(connector "${1}")
         }
         _ build/${infile:-index}.main.mjs

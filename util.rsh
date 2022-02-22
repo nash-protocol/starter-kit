@@ -99,3 +99,178 @@ export const useConstructor = (particpantFunc = () => {}, viewFunc = () => {}, a
   verify(Constructor, Verifier, Contractee)
   return [p, v, a];
 }
+export const depositTok7 = (A) => {
+  A.only(() => {
+    const {
+      amount,
+      tokens: [tok0, tok1, tok2, tok3, tok4, tok5, tok6],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+    assume(tok0 != tok3);
+    assume(tok0 != tok4);
+    assume(tok0 != tok5);
+    assume(tok0 != tok6);
+  });
+  A.publish(amount, tok0, tok1, tok2, tok3, tok4, tok5, tok6);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  require(tok0 != tok3);
+  require(tok0 != tok4);
+  require(tok0 != tok5);
+  require(tok0 != tok6);
+  commit();
+  A.pay([
+    0,
+    [1, tok0],
+    [1, tok1],
+    [1, tok2],
+    [1, tok3],
+    [1, tok4],
+    [1, tok5],
+    [1, tok6],
+  ]);
+  commit();
+  return { amount, tokens: [tok0, tok1, tok2, tok3, tok4, tok5, tok6] };
+};
+export const depositTok6 = (A) => {
+  A.only(() => {
+    const {
+      amount,
+      tokens: [tok0, tok1, tok2, tok3, tok4, tok5],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+    assume(tok0 != tok3);
+    assume(tok0 != tok4);
+    assume(tok0 != tok5);
+  });
+  A.publish(amount, tok0, tok1, tok2, tok3, tok4, tok5);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  require(tok0 != tok3);
+  require(tok0 != tok4);
+  require(tok0 != tok5);
+  commit();
+  A.pay([
+    0,
+    [1, tok0],
+    [1, tok1],
+    [1, tok2],
+    [1, tok3],
+    [1, tok4],
+    [1, tok5],
+  ]);
+  commit();
+  return { amount, tokens: [tok0, tok1, tok2, tok3, tok4, tok5] };
+};
+export const depositTok5 = (A) => {
+  A.only(() => {
+    const {
+      amount,
+      tokens: [tok0, tok1, tok2, tok3, tok4],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+    assume(tok0 != tok3);
+    assume(tok0 != tok4);
+  });
+  A.publish(amount, tok0, tok1, tok2, tok3, tok4);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  require(tok0 != tok3);
+  require(tok0 != tok4);
+  commit();
+  A.pay([
+    0,
+    [1, tok0],
+    [1, tok1],
+    [1, tok2],
+    [1, tok3],
+    [1, tok4],
+  ]);
+  commit();
+  return { amount, tokens: [tok0, tok1, tok2, tok3, tok4] };
+};
+export const depositTok4 = (A) => {
+  A.only(() => {
+    const {
+      amount,
+      tokens: [tok0, tok1, tok2, tok3],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+    assume(tok0 != tok3);
+  });
+  A.publish(amount, tok0, tok1, tok2, tok3);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  require(tok0 != tok3);
+  commit();
+  A.pay([
+    0,
+    [1, tok0],
+    [1, tok1],
+    [1, tok2],
+    [1, tok3],
+  ]);
+  commit();
+  return { amount, tokens: [tok0, tok1, tok2, tok3] };
+};
+export const depositTok3 = (A) => {
+  A.only(() => {
+    const {
+      amount,
+      tokens: [tok0, tok1, tok2],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+  });
+  A.publish(amount, tok0, tok1, tok2);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  commit();
+  A.pay([
+    0,
+    [1, tok0],
+    [1, tok1],
+    [1, tok2],
+  ]);
+  commit();
+  return { amount, tokens: [tok0, tok1, tok2] };
+};
+export const depositTok2 = (A) => {
+  A.only(() => {
+    const {
+      amount,
+      tokens: [tok0, tok1],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+  });
+  A.publish(amount, tok0, tok1);
+  require(tok0 != tok1);
+  commit();
+  A.pay([
+    0,
+    [1, tok0],
+    [1, tok1],
+  ]);
+  commit();
+  return { amount, tokens: [tok0, tok1] };
+};
+export const depositTok = (A) => {
+  A.only(() => {
+    const {
+      amount,
+      tokens: [tok0],
+    } = declassify(interact.getParams());
+  });
+  A.publish(amount, tok0);
+  commit();
+  A.pay([
+    0,
+    [1, tok0]
+  ]);
+  commit();
+  return { amount, tokens: [tok0] };
+};
