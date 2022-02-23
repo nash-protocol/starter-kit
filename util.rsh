@@ -274,3 +274,115 @@ export const depositTok = (A) => {
   commit();
   return { amount, tokens: [tok0] };
 };
+export const requireTok7 = (A) => {
+  A.only(() => {
+    const {
+      tokens: [tok0, tok1, tok2, tok3, tok4, tok5, tok6],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+    assume(tok0 != tok3);
+    assume(tok0 != tok4);
+    assume(tok0 != tok5);
+    assume(tok0 != tok6);
+  });
+  A.publish(tok0, tok1, tok2, tok3, tok4, tok5, tok6);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  require(tok0 != tok3);
+  require(tok0 != tok4);
+  require(tok0 != tok5);
+  require(tok0 != tok6);
+  commit();
+  return { tokens: [tok0, tok1, tok2, tok3, tok4, tok5, tok6] };
+};
+export const requireTok6 = (A) => {
+  A.only(() => {
+    const {
+      tokens: [tok0, tok1, tok2, tok3, tok4, tok5],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+    assume(tok0 != tok3);
+    assume(tok0 != tok4);
+    assume(tok0 != tok5);
+  });
+  A.publish(tok0, tok1, tok2, tok3, tok4, tok5);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  require(tok0 != tok3);
+  require(tok0 != tok4);
+  require(tok0 != tok5);
+  commit();
+  return { tokens: [tok0, tok1, tok2, tok3, tok4, tok5] };
+};
+export const requireTok5 = (A) => {
+  A.only(() => {
+    const {
+      tokens: [tok0, tok1, tok2, tok3, tok4],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+    assume(tok0 != tok3);
+    assume(tok0 != tok4);
+  });
+  A.publish(tok0, tok1, tok2, tok3, tok4);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  require(tok0 != tok3);
+  require(tok0 != tok4);
+  commit();
+  return { tokens: [tok0, tok1, tok2, tok3, tok4] };
+};
+export const requireTok4 = (A) => {
+  A.only(() => {
+    const {
+      tokens: [tok0, tok1, tok2, tok3],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+    assume(tok0 != tok3);
+  });
+  A.publish(tok0, tok1, tok2, tok3);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  require(tok0 != tok3);
+  commit();
+  return { tokens: [tok0, tok1, tok2, tok3] };
+};
+export const requireTok3 = (A) => {
+  A.only(() => {
+    const {
+      tokens: [tok0, tok1, tok2],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+    assume(tok0 != tok2);
+  });
+  A.publish(tok0, tok1, tok2);
+  require(tok0 != tok1);
+  require(tok0 != tok2);
+  commit();
+  return { tokens: [tok0, tok1, tok2] };
+};
+export const requireTok2 = (A) => {
+  A.only(() => {
+    const {
+      tokens: [tok0, tok1],
+    } = declassify(interact.getParams());
+    assume(tok0 != tok1);
+  });
+  A.publish(tok0, tok1);
+  require(tok0 != tok1);
+  commit();
+  return { tokens: [tok0, tok1] };
+};
+export const requireTok = (A) => {
+  A.only(() => {
+    const {
+      tokens: [tok0]
+    } = declassify(interact.getParams());
+  });
+  A.publish(tok0);
+  commit();
+  return { tokens: [tok0] };
+};
