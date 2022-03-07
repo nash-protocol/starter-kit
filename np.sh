@@ -1,6 +1,6 @@
 export REACH_VERSION=402c3faa # v0.1.9-rc2
 API_ENDPOINT_TESTNET="https://algoapiv1.herokuapp.com"
-TEMPLATE_NAME="lite"
+TEMPLATE_NAME="stone"
 update() {
   # download latest script
   # clean install
