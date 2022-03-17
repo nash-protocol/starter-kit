@@ -1,5 +1,11 @@
+export REACH_VERSION=402c3faa # v0.1.9-rc2
 API_ENDPOINT_TESTNET="https://algoapiv1.herokuapp.com"
 TEMPLATE_NAME="lite"
+update() {
+  # download latest script
+  # clean install
+  true 
+}
 reset() {
 	test ! -d ".reach" || rm -rvf "${_}"
 	test ! -f "np.sh" || source "${_}"
@@ -12,8 +18,8 @@ connector () {
         echo "console.log(JSON.stringify({ALGO:_ALGO, template: '${TEMPLATE_NAME}'}))"
 }
 compile () {
-        REACH_VERSION=0.1.7 ./reach compile ${infile:-index}.rsh --install-pkgs
-        REACH_VERSION=0.1.7 ./reach compile ${infile:-index}.rsh "${@}"
+	./reach compile ${infile:-index}.rsh --install-pkgs
+	./reach compile ${infile:-index}.rsh "${@}"
 }
 eject () {
         _ () {
@@ -64,8 +70,11 @@ np () {
         local infile="${1:-index}" 
         test -f "${infile:-index}.rsh" || return
         main () {
-          get-reach
           compile && launch
         }
         main
 }
+_() {
+  get-reach
+}
+_
