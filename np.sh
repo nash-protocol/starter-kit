@@ -30,8 +30,9 @@ connector () {
         echo "console.log(JSON.stringify({ALGO:_ALGO, template: '${TEMPLATE_NAME:-lite}'}))"
 }
 compile () {
-	./reach compile ${infile:-index}.rsh --install-pkgs
-	./reach compile ${infile:-index}.rsh "${@}"
+        echo "${REACH_VERSION}"
+        ./reach compile ${infile:-index}.rsh --install-pkgs
+        ./reach compile ${infile:-index}.rsh "${@}"
 }
 eject () {
         _ () {
@@ -55,7 +56,7 @@ v2-launch() {
 }
 v2-apps() {
   local plan_id="${1}"
-  curl "${API_ENDPOINT_TESTNET}/api/v2/apps?$planId={plan_id}" -H 'Content-Type: application/json'
+  curl "${API_ENDPOINT_TESTNET}/api/v2/apps?planId=${plan_id}" -H 'Content-Type: application/json'
 }
 v2-verify() {
   local plan_id="${1}"

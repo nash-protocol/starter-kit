@@ -1,5 +1,5 @@
-'reach 0.1';
-'use strict';
+"reach 0.1";
+"use strict";
 // -----------------------------------------------
 // Name: Interface Template
 // Description: NP Rapp simple
@@ -7,12 +7,12 @@
 // Version: 0.0.2 - initial
 // Requires Reach v0.1.7 (stable)
 // ----------------------------------------------
-export const Participants = () =>[]
-export const Views = () => []
-export const Api = () => []
+export const Participants = () => [];
+export const Views = () => [];
+export const Api = () => [];
 export const App = (_) => {
-  Anybody.publish()
-  commit()
-  exit()
-}
+  Anybody.publish();
+  commit();
+  exit();
+};
 // ----------------------------------------------
