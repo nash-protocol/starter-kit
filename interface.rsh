@@ -28,7 +28,7 @@ export const App = (map) => {
   });
   Alice.publish(foo).pay(amt+foo)
   .timeout(relativeTime(ttl), () => {
-    Relay.publish()
+    Anybody.publish()
     transfer(balance()).to(addr)
     commit();
     exit();
