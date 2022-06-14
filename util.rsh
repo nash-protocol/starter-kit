@@ -76,6 +76,7 @@ export const binaryFork = (A, B, addr, amt, ttl) => {
 };
 export const DefaultParticipants = () => [
   Participant("Constructor", constructorInteract),
+  Participant("Verifier", constructorInteract),
 ];
 export const verify = (Constructor, Verifier, Contractee) => {
   const { addr, amt, ttl } = construct(Constructor, Verifier);
@@ -88,7 +89,7 @@ export const useConstructor = (
   apiFunc = () => {},
   eventFunc = () => {}
 ) => {
-  const [Constructor] = DefaultParticipants();
+  const [Constructor, _] = DefaultParticipants();
   const p = particpantFunc();
   const v = viewFunc();
   const a = apiFunc();
