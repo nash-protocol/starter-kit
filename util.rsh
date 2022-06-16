@@ -21,23 +21,25 @@ export const constructorInteract = {
       addr: Address, // contract addr
       amt: UInt, // activation params fee gate
       ttl: UInt, // relative time (block) to allow for verification
-      tok0: Token // some token
+      tok0: Token, // some token
+      tok1: Token, // some token
     })
   ),
 };
 export const construct = (Constructor) => {
   Constructor.only(() => {
-    const { addr, amt, ttl, tok0 } = declassify(interact.getParams());
+    const { addr, amt, ttl, tok0, tok1 } = declassify(interact.getParams());
     assume(true);
   });
-  Constructor.publish(addr, amt, ttl, tok0);
+  Constructor.publish(addr, amt, ttl, tok0, tok1);
   require(true);
   commit();
   return {
     addr,
     amt,
     ttl,
-    tok0
+    tok0,
+    tok1,
   };
 };
 export const binaryFork = (A, B, addr, amt, ttl) => {
@@ -95,8 +97,8 @@ export const useConstructor = (
   const a = apiFunc();
   const e = eventFunc();
   init();
-  const { addr, amt, ttl, tok0 } = construct(Constructor);
-  return [{ amt, ttl, tok0 }, [addr, Constructor], p, v, a, e];
+  const { addr, amt, ttl, tok0, tok1 } = construct(Constructor);
+  return [{ amt, ttl, tok0, tok1 }, [addr, Constructor], p, v, a, e];
 };
 // deposit tokens
 export const depositTok7 = (A) => {
