@@ -43,7 +43,10 @@ eject () {
 plan() {
   cat << EOF
 {
-  "id": "${plan_id}"
+  "id": "${plan_id}",
+  "params": {
+    $( if-template hydrogen || echo '"tok0": '${param_tok0} )
+  }
 }
 EOF
 }
@@ -52,6 +55,7 @@ v2-register() {
 }
 v2-launch() {
   local plan_id="${1}"
+  local param_tok0="${2:${PARAM_TOK0}}"
   curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/launch" -H 'Content-Type: application/json' -d @<( plan ) 
 }
 v2-apps() {
@@ -63,7 +67,7 @@ v2-verify() {
   curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/verify" -H 'Content-Type: application/json' -d @<( plan )
 }
 v1-launch () {
-        curl -X POST "${API_ENDPOINT_TESTNET}/api/v1/launch" -H 'Content-Type: application/json' -d @<( eject ) 
+  curl -X POST "${API_ENDPOINT_TESTNET}/api/v1/launch" -H 'Content-Type: application/json' -d @<( eject ) 
 }
 devnet() {
         local -x REACH_CONNECTOR_MODE=ALGO-devnet
@@ -78,6 +82,9 @@ get-reach() {
     curl https://docs.reach.sh/reach -o reach --silent
     chmod +x reach
   }
+}
+if-template() {
+  test ! "${TEMPLATE_NAME}" = "${1}"
 }
 np () {
         local infile="${1:-index}" 
