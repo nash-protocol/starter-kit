@@ -29,10 +29,10 @@ export const constructorInteract = {
 export const construct = (Constructor) => {
   Constructor.only(() => {
     const { addr, amt, ttl, tok0, tok1 } = declassify(interact.getParams());
-    assume(true);
+    assume(distinct(tok0, tok1));
   });
   Constructor.publish(addr, amt, ttl, tok0, tok1);
-  require(true);
+  require(distinct(tok0, tok1));
   commit();
   return {
     addr,
