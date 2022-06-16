@@ -40,23 +40,46 @@ eject () {
         }
         _ build/${infile:-index}.main.mjs
 }
-plan() {
+plan-verify() {
+  cat << EOF
+{
+  "id": "${plan_id}"
+}
+EOF
+}
+plan-hydrogen() {
   cat << EOF
 {
   "id": "${plan_id}",
   "params": {
-    $( if-template hydrogen || echo '"tok0": '${param_tok0} )
+    "tok0": ${param_tok0} 
   }
 }
 EOF
+}
+plan-lite() {
+  cat << EOF
+{
+  "id": "${plan_id}",
+  "params": {}
+}
+EOF
+}
+plan() {
+  case "${1}" in
+   verify) plan-verify;;
+   hydrogen|1) plan-hydrogen;;
+   lite|0|*) plan-lite;;
+  esac
 }
 v2-register() {
   curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/register" -H 'Content-Type: application/json' -d @<( eject ) 
 }
 v2-launch() {
   local plan_id="${1}"
-  local param_tok0="${2:${PARAM_TOK0}}"
-  curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/launch" -H 'Content-Type: application/json' -d @<( plan ) 
+  local param_tok0="${2:-${PARAM_TOK0}}"
+  local param_tok1="${2:-${PARAM_TOK1}}"
+  curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/launch" -H 'Content-Type: application/json' -d @<( plan "${TEMPLATE_NAME}" ) 
 }
 v2-apps() {
   local plan_id="${1}"
@@ -64,7 +87,7 @@ v2-apps() {
 }
 v2-verify() {
   local plan_id="${1}"
-  curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/verify" -H 'Content-Type: application/json' -d @<( plan )
+  curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/verify" -H 'Content-Type: application/json' -d @<( plan verify )
 }
 v1-launch () {
   curl -X POST "${API_ENDPOINT_TESTNET}/api/v1/launch" -H 'Content-Type: application/json' -d @<( eject ) 
