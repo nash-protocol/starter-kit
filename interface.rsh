@@ -7,6 +7,7 @@
 // Version: 0.0.2 - initial
 // Requires Reach v0.1.7 (stable)
 // ----------------------------------------------
+const SERIAL_VER = 0;
 export const Event = () => [];
 export const Participants = () => [
   Participant("Alice", {
@@ -26,7 +27,7 @@ export const App = (map) => {
   Alice.only(() => {
     const { foo } = declassify(interact.getParams());
   });
-  Alice.publish(foo).pay(amt+foo)
+  Alice.publish(foo).pay(amt+foo+SERIAL_VER)
   .timeout(relativeTime(ttl), () => {
     Anybody.publish()
     transfer(balance()).to(addr)
