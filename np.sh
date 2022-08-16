@@ -48,7 +48,7 @@ plan() {
 EOF
 }
 v2-register() {
-  curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/register" -H 'Content-Type: application/json' -d @<( eject ) 
+  curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/register" -H 'Content-Type: application/json' -H "Authorization: Bearer ${ZB_AUTH_TOKEN}" -d @<( eject ) 
 }
 v2-launch() {
   local plan_id="${1}"
@@ -60,10 +60,10 @@ v2-apps() {
 }
 v2-verify() {
   local plan_id="${1}"
-  curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/verify" -H 'Content-Type: application/json' -d @<( plan )
+  curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/verify" -H 'Content-Type: application/json' -H "Authorization: Bearer ${ZB_AUTH_TOKEN}" -d @<( plan )
 }
 v1-launch () {
-        curl -X POST "${API_ENDPOINT_TESTNET}/api/v1/launch" -H 'Content-Type: application/json' -d @<( eject ) 
+        curl -X POST "${API_ENDPOINT_TESTNET}/api/v1/launch" -H 'Content-Type: application/json'  -H "Authorization: Bearer ${ZB_AUTH_TOKEN}" -d @<( eject ) 
 }
 devnet() {
         local -x REACH_CONNECTOR_MODE=ALGO-devnet
