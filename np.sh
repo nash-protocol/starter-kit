@@ -95,6 +95,10 @@ EOF
 		local plan_id="${1}" 
 		local param_tok0="${2:-${PARAM_TOK0}}" 
 		local param_tok1="${3:-${PARAM_TOK1}}" 
+		local param_tok2="${4:-${PARAM_TOK2}}" 
+		local param_tok3="${5:-${PARAM_TOK3}}" 
+		local param_tok4="${6:-${PARAM_TOK4}}" 
+		local param_tok5="${7:-${PARAM_TOK5}}" 
 		curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/launch" -H 'Content-Type: application/json' -d @<( plan "${TEMPLATE_NAME}" )
 	}
 	v2-auth() {
