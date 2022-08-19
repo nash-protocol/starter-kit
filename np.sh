@@ -28,8 +28,8 @@ EOF
 	}
 	compile () {
 		echo "${REACH_VERSION}"
-		./reach compile ${infile:-index}.rsh --install-pkgs
-		./reach compile ${infile:-index}.rsh "${@}"
+		REACH_VERSION="${REACH_VERSION}" ./reach compile ${infile:-index}.rsh --install-pkgs
+		REACH_VERSION="${REACH_VERSION}" ./reach compile ${infile:-index}.rsh "${@}"
 	}
 	eject () {
 		_ () {
@@ -85,7 +85,7 @@ EOF
 			(carbon | 3) plan-carbon ;;
 			(helium | 2) plan-helium ;;
 			(hydrogen | 1) plan-hydrogen ;;
-			(verify | 0 | *) plan-verify ;;
+			(verify | atom | 0 | *) plan-verify ;;
 		esac
 	}
 	v2-register () {
@@ -96,6 +96,9 @@ EOF
 		local param_tok0="${2:-${PARAM_TOK0}}" 
 		local param_tok1="${3:-${PARAM_TOK1}}" 
 		curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/launch" -H 'Content-Type: application/json' -d @<( plan "${TEMPLATE_NAME}" )
+	}
+	v2-auth() {
+		curl -X POST "${API_ENDPOINT_TESTNET}/api/v2/auth" -H 'Content-Type: application/json' -H "Authorization: Bearer ${ZB_AUTH_TOKEN}"
 	}
 	v2-apps () {
 		local plan_id="${1}" 
