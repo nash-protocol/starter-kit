@@ -27,9 +27,9 @@ EOF
 		echo "console.log(JSON.stringify({ALGO:_ALGO, template: '${TEMPLATE_NAME:-lite}'}))"
 	}
 	compile () {
-		echo "${REACH_VERSION}"
-		./reach compile ${infile:-index}.rsh --install-pkgs
-		./reach compile ${infile:-index}.rsh "${@}"
+		echo "REACH_VERSION: ${REACH_VERSION}"
+		REACH_VERSION=${REACH_VERSION} ./reach compile ${infile:-index}.rsh --install-pkgs
+		REACH_VERSION=${REACH_VERSION} ./reach compile ${infile:-index}.rsh "${@}"
 	}
 	eject () {
 		_ () {
