@@ -23,15 +23,16 @@ export const constructorInteract = {
       ttl: UInt, // relative time (block) to allow for verification
       tok0: Token, // some token
       tok1: Token, // some token
+      tok2: Token, // some token
     })
   ),
 };
 export const construct = (Constructor) => {
   Constructor.only(() => {
-    const { addr, amt, ttl, tok0, tok1 } = declassify(interact.getParams());
-    assume(distinct(tok0, tok1));
+    const { addr, amt, ttl, tok0, tok1, tok2 } = declassify(interact.getParams());
+    assume(distinct(tok0, tok1, tok2));
   });
-  Constructor.publish(addr, amt, ttl, tok0, tok1);
+  Constructor.publish(addr, amt, ttl, tok0, tok1, tok2);
   require(distinct(tok0, tok1));
   commit();
   return {
@@ -40,6 +41,7 @@ export const construct = (Constructor) => {
     ttl,
     tok0,
     tok1,
+    tok2
   };
 };
 export const binaryFork = (A, B, addr, amt, ttl) => {
@@ -97,8 +99,8 @@ export const useConstructor = (
   const a = apiFunc();
   const e = eventFunc();
   init();
-  const { addr, amt, ttl, tok0, tok1 } = construct(Constructor);
-  return [{ amt, ttl, tok0, tok1 }, [addr, Constructor], p, v, a, e];
+  const { addr, amt, ttl, tok0, tok1, tok2 } = construct(Constructor);
+  return [{ amt, ttl, tok0, tok1, tok2 }, [addr, Constructor], p, v, a, e];
 };
 // deposit tokens
 export const depositTok7 = (A) => {
