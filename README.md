@@ -87,7 +87,7 @@ export const main = Reach.App(() =>
 ##### .env
 
 ```
-export REACH_VERSION=0.1.12 # v0.1.12
+export REACH_VERSION=27cb9643 # v0.1.11-rc.7
 API_ENDPOINT_TESTNET="https://launcher.testnet.zestbloom.com"
 TEMPLATE_NAME="atom"
 ZB_AUTH_TOKEN=
