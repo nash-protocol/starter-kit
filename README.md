@@ -80,6 +80,43 @@ TEMPLATE_NAME=<template name>
 ZB_AUTH_TOKEN=<api key>
 ```
 
+### main program head
+
+The main program should look like this to get started
+
+```
+export const App = (map) => {
+  const [
+    { amt, ttl }, // activation cost, time to live
+    [addr, _], // constructors
+    [Manager, Relay], // your participants
+    [v], // your views
+    [a], // your apis
+    [e], // your events
+  ] = map;
+```
+
+If not using map then this works
+
+```
+export const App = (_) => {
+```
+
+The first participants message SHOULD receive payment in `amt` from Manager. `amt` SHOULD be transfered to `addr` to compensate the constuctor for deployment cost and associated min balance changes. Payment of activation fee ensures sustainable use of launcher service. 
+
+```
+  Manager.publish(max, tokenAmount)
+    // checks
+    .pay([amt])
+    .timeout(relativeTime(ttl), () => {
+      Anybody.publish();
+      commit();
+      exit();
+    });
+  transfer(amt).to(addr);
+```
+  
+
 ### atom
 
 Template with no asset pre-optin
@@ -102,28 +139,6 @@ export REACH_VERSION=27cb9643 # v0.1.11-rc.7
 API_ENDPOINT_TESTNET="https://launcher.testnet.zestbloom.com"
 TEMPLATE_NAME="atom"
 ZB_AUTH_TOKEN=
-```
-
-### main program head
-
-The main program should look like this to get started
-
-```
-export const App = (map) => {
-  const [
-    { amt, ttl }, // activation cost, time to live
-    [addr, _], // constructors
-    [Manager, Relay], // your participants
-    [v], // your views
-    [a], // your apis
-    [e], // your events
-  ] = map;
-```
-
-If not using map then this works
-
-```
-export const App = (_) => {
 ```
 
 ### hydrogen
