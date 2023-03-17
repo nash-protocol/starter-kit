@@ -35,6 +35,17 @@ backend.Contractee(ctc, {})
 
 ## templates
 
+Templates improve the developer and user experience by pre-opting into assets before the first message by the contract manager.
+
+Each template behaves more or less the same at this point with exception of earlier templates. The difference is the number of assets that are opted in before reaching the main program.
+
+atom - 0 assets  
+hydrogen - 1 asset
+...
+
+Simply update the .env file and index.rsh to switch templates.
+
+
 ### common
 
 #### index
