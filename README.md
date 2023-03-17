@@ -104,6 +104,28 @@ TEMPLATE_NAME="atom"
 ZB_AUTH_TOKEN=
 ```
 
+### main program head
+
+The main program should look like this to get started
+
+```
+export const App = (map) => {
+  const [
+    { amt, ttl }, // activation cost, time to live
+    [addr, _], // constructors
+    [Manager, Relay], // your participants
+    [v], // your views
+    [a], // your apis
+    [e], // your events
+  ] = map;
+```
+
+If not using map then this works
+
+```
+export const App = (_) => {
+```
+
 ### hydrogen
 
 Template with 1 asset pre-optin
