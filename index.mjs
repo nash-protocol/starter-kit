@@ -1,6 +1,5 @@
 import { loadStdlib } from "@reach-sh/stdlib";
-import * as childBackend from "./build/index.Child.mjs";
-import * as masterBackend from "./build/index.Master.mjs";
+import * as mainBackend from "./build/index.main.mjs";
 
 const stdlib = loadStdlib(process.env);
 
@@ -30,7 +29,7 @@ const Test = async (backend) => {
   const bn = stdlib.bigNumberify;
   const startingBalance = pc(100);
 
-  const [accAlice] = await stdlib.newTestAccounts(1, startingBalance);
+  const [accAlice, accBob] = await stdlib.newTestAccounts(2, startingBalance);
 
   const ctcAlice = accAlice.contract(backend);
 
@@ -49,43 +48,14 @@ const Test = async (backend) => {
 
   const ctcInfo = await ctcAlice.getInfo();
 
+  const ctcBob = accBob.contract(backend, ctcInfo);
+
   console.log({ ctcInfo });
-
-  const appCount = 10;
-
-  const ctcs = [];
-  for (let i = 0; i < appCount; i++) {
-    console.log(`Deploying contract ${i}...`);
-    const ctc = await ctcAlice.a.Child.new();
-    console.log(ctc);
-    console.log(stdlib.bigNumberToNumber(ctc));
-    console.log("Contract deployed!");
-    ctcs.push(ctc);
-    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
-    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
-  }
-
-  for (let i = 0; i < appCount; i++) {
-    const ctcInfo = ctcs[i];
-    console.log(`Setting up contract ${i}...`);
-    await ctcAlice.a.Child.setup(ctcInfo);
-    console.log("Contract set up!");
-    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
-    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
-  }
-
-  for (let i = 0; i < appCount; i++) {
-    const ctcInfo = ctcs[i];
-    // do some work on child contract
-    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
-    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
-  }
-  console.log("Goodbye, Alice!");
 };
 
 const main = async () => {
   console.log("Running main...");
-  await Test(masterBackend);
+  await Test(mainBackend);
 };
 
 main();
