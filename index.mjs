@@ -1,122 +1,91 @@
 import { loadStdlib } from "@reach-sh/stdlib";
-import assert from "assert";
+import * as childBackend from "./build/index.Child.mjs";
+import * as masterBackend from "./build/index.Master.mjs";
 
-const [, , infile] = process.argv;
+const stdlib = loadStdlib(process.env);
 
-(async () => {
-  console.log("START");
+const loadEvents = async (ctc, eventName) => {
+  if (!(eventName in ctc.e)) return [];
+  console.log("Loading events...");
+  const evts = [];
+  await Promise.race([ctc.e[eventName].next(), sleep(1000, "", "reject")])
+    .then((x) => {
+      evts.push(x);
+    })
+    .catch(() => {});
+  return evts;
+};
 
-  const backend = await import(`./build/${infile}.main.mjs`);
-  const stdlib = await loadStdlib();
-  const startingBalance = stdlib.parseCurrency(1000);
+const showBalances = async (name, acc, tok) => {
+  const netBalance = stdlib.formatCurrency(await acc.balanceOf());
+  const tokBalance = stdlib.formatWithDecimals(await acc.balanceOf(tok), 0);
+  console.log(`(${name}) Balance:`, netBalance);
+  console.log(`${tok} Balance:`, tokBalance);
+};
 
-  const accAlice = await stdlib.newTestAccount(startingBalance);
-  const accBob = await stdlib.newTestAccount(startingBalance);
-  const accEve = await stdlib.newTestAccount(startingBalance);
+const Test = async (backend) => {
+  console.log("Running Test...");
 
-  const accs = await Promise.all(
-    Array.from({ length: 10 }).map(() => stdlib.newTestAccount(startingBalance))
+  const pc = stdlib.parseCurrency;
+  const bn = stdlib.bigNumberify;
+  const startingBalance = pc(100);
+
+  const [accAlice] = await stdlib.newTestAccounts(1, startingBalance);
+
+  const ctcAlice = accAlice.contract(backend);
+
+  console.log(ctcAlice);
+
+  console.log("Hello, Alice!");
+
+  await stdlib.withDisconnect(() =>
+    ctcAlice.p.Alice({
+      ready: () => {
+        console.log("Ready!");
+        stdlib.disconnect(null); // causes withDisconnect to immediately return null
+      },
+    })
   );
 
-  const reset = async (accs) => {
-    await Promise.all(accs.map(rebalance));
-    await Promise.all(
-      accs.map(async (el) =>
-        console.log(`balance (acc): ${await getBalance(accAlice)}`)
-      )
-    );
-  };
+  const ctcInfo = await ctcAlice.getInfo();
 
-  const rebalance = async (acc) => {
-    if ((await getBalance(acc)) > 1000) {
-      await stdlib.transfer(
-        acc,
-        accEve?.networkAccount?.addr,
-        stdlib.parseCurrency((await getBalance(acc)) - 1000)
-      );
-    } else {
-      await stdlib.transfer(
-        accEve,
-        acc?.networkAccount?.addr,
-        stdlib.parseCurrency(1000 - (await getBalance(acc)))
-      );
-    }
-  };
+  console.log({ ctcInfo });
 
-  const zorkmid = await stdlib.launchToken(accAlice, "zorkmid", "ZMD");
-  const gil = await stdlib.launchToken(accBob, "gil", "GIL");
-  await accAlice.tokenAccept(gil.id);
-  await accBob.tokenAccept(zorkmid.id);
+  const appCount = 10;
 
-  const getBalance = async (who) =>
-    stdlib.formatCurrency(await stdlib.balanceOf(who), 4);
+  const ctcs = [];
+  for (let i = 0; i < appCount; i++) {
+    console.log(`Deploying contract ${i}...`);
+    const ctc = await ctcAlice.a.Child.new();
+    console.log(ctc);
+    console.log(stdlib.bigNumberToNumber(ctc));
+    console.log("Contract deployed!");
+    ctcs.push(ctc);
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+  }
 
-  const beforeAlice = await getBalance(accAlice);
-  const beforeBob = await getBalance(accBob);
+  for (let i = 0; i < appCount; i++) {
+    const ctcInfo = ctcs[i];
+    console.log(`Setting up contract ${i}...`);
+    await ctcAlice.a.Child.setup(ctcInfo);
+    console.log("Contract set up!");
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+  }
 
-  const getParams = (addr) => ({
-    addr,
-    addr2: addr,
-    addr3: addr,
-    addr4: addr,
-    addr5: addr,
-    amt: stdlib.parseCurrency(1),
-    tok: zorkmid.id,
-    token_name: "",
-    token_symbol: "",
-    secs: 0,
-    secs2: 0,
-  });
+  for (let i = 0; i < appCount; i++) {
+    const ctcInfo = ctcs[i];
+    // do some work on child contract
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+  }
+  console.log("Goodbye, Alice!");
+};
 
-  // (1) can be deleted before activation
-  console.log("CAN DELETED INACTIVE");
-  (async (acc) => {
-    let addr = acc?.networkAccount?.addr;
-    let ctc = acc.contract(backend);
-    Promise.all([
-      backend.Constructor(ctc, {
-        getParams: () => getParams(addr),
-      }),
-      backend.Verifier(ctc, {}),
-    ]).catch(console.dir);
-    let appId = await ctc.getInfo();
-  })(accAlice);
-  await stdlib.wait(4);
+const main = async () => {
+  console.log("Running main...");
+  await Test(masterBackend);
+};
 
-  await reset([accAlice, accBob]);
-
-  // (2) constructor receives payment on activation
-  console.log("CAN ACTIVATE WITH PAYMENT");
-  await (async (acc, acc2) => {
-    let addr = acc?.networkAccount?.addr;
-    let ctc = acc.contract(backend);
-    Promise.all([
-      backend.Constructor(ctc, {
-        getParams: () => getParams(addr),
-      }),
-    ]);
-    let appId = await ctc.getInfo();
-    let ctc2 = acc2.contract(backend, appId);
-    Promise.all([backend.Contractee(ctc2, {})]);
-    await stdlib.wait(50);
-  })(accAlice, accBob);
-  await stdlib.wait(4);
-
-  const afterAlice = await getBalance(accAlice);
-  const afterBob = await getBalance(accBob);
-
-  const diffAlice = Math.round(afterAlice - beforeAlice);
-  const diffBob = Math.round(afterBob - beforeBob);
-
-  console.log(
-    `Alice went from ${beforeAlice} to ${afterAlice} (${diffAlice}).`
-  );
-  console.log(`Bob went from ${beforeBob} to ${afterBob} (${diffBob}).`);
-
-  assert.equal(diffAlice, 1);
-  assert.equal(diffBob, -1);
-
-  await reset([accAlice, accBob]);
-
-  process.exit();
-})();
+main();
