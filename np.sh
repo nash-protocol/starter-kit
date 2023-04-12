@@ -6,7 +6,9 @@ _ () {
 	} || {
 		cat <<EOF
 [WARNING] missing .env file
+creating .env file...
 EOF
+		cp -v .env-sample .env
 	}
 	read -t 5 || true
 	config () {
