@@ -34,9 +34,20 @@ const Test = async (backend) => {
 
   const ctcAlice = accAlice.contract(backend);
 
-  console.log(ctcAlice);
-
   console.log("Hello, Alice!");
+
+  [
+    "new",
+    "grant",
+    "ready",
+  ].forEach((el) => {
+    ctcAlice.e[el].monitor((ej) => {
+      console.log("...........................................");
+      console.log(`${el} event!`);
+      console.log(ej);
+      console.log("...........................................");
+    });
+  });
 
   await stdlib.withDisconnect(() =>
     ctcAlice.p.Alice({
@@ -56,7 +67,7 @@ const Test = async (backend) => {
   const ctcs = [];
   for (let i = 0; i < appCount; i++) {
     console.log(`Deploying contract ${i}...`);
-    const ctc = await ctcAlice.a.Child.new();
+    const ctc = await ctcAlice.a.Master.new();
     console.log(ctc);
     console.log(stdlib.bigNumberToNumber(ctc));
     console.log("Contract deployed!");
@@ -68,7 +79,7 @@ const Test = async (backend) => {
   for (let i = 0; i < appCount; i++) {
     const ctcInfo = ctcs[i];
     console.log(`Setting up contract ${i}...`);
-    await ctcAlice.a.Child.setup(ctcInfo);
+    await ctcAlice.a.Master.setup(ctcInfo);
     console.log("Contract set up!");
     console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
     console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
