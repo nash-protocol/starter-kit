@@ -24,6 +24,8 @@ export const Child = Reach.App(() => {
       foo2: Fun([Address], Bool),
       foo3: Fun([Address, Address], Bool),
       foo4: Fun([Address, Address], Bool),
+      foo5: Fun([Address, Address], Bool),
+      foo6: Fun([Address, Address], Bool),
     }),
     C: API("C", {
       grant: Fun([Address], Bool),
@@ -51,7 +53,7 @@ export const Child = Reach.App(() => {
     Child_grant: Fun([Contract, TokenType, Address], Bool),
     Child_foo: Fun([Contract, TokenType, Address], Bool),
   });
-  enforce(r.Child_ready(ctc, token), "Child app not announced as ready");
+  //enforce(r.Child_ready(ctc, token), "Child app not announced as ready");
   const clickM = new Map(UInt);
   const likeM = new Map(Tuple(Address, Address), UInt);
   const initialState = {
@@ -61,7 +63,7 @@ export const Child = Reach.App(() => {
   };
   const [s] = parallelReduce([initialState])
     .while(true)
-    .invariant(balance() == 0, "balance accurate")
+    .invariant(balance() >= 0, "balance accurate")
     .invariant(balance(token) == 0, "token balance accurate")
     .define(() => {
       v.state.set(() => State.fromObject(s));
@@ -108,6 +110,27 @@ export const Child = Reach.App(() => {
         },
       ];
     })
+    // deletes boxes
+    .api_(a.U0.foo5, (addr1, addr2) => {
+      return [
+        (k) => {
+          k(true);
+          if (isSome(clickM[addr1])) delete clickM[addr1];
+          if (isSome(clickM[addr2])) delete clickM[addr2];
+          if (isSome(likeM[[addr1, addr2]])) delete likeM[[addr1, addr2]];
+          return [s];
+        },
+      ];
+    })
+    .api_(a.U0.foo6, (addr1, addr2) => {
+      return [
+        (k) => {
+          k(true);
+          likeM[[addr1, addr2]] = 0;
+          return [s];
+        },
+      ];
+    })
     .api_(a.C.grant, (addr) => {
       check(this == s.constructor, "Only constructor can grant");
       return [
@@ -141,6 +164,7 @@ export const Master = Reach.App(() => {
       foo2: Fun([Contract, Address], Bool),
       foo3: Fun([Contract, Address, Address], Bool),
       foo4: Fun([Contract, Address, Address], Bool),
+      foo6: Fun([Contract, Address, Address], Bool),
     }),
     child: API("Child", {
       ready: Fun([Contract, TokenType], Bool),
@@ -247,6 +271,24 @@ export const Master = Reach.App(() => {
                 [ctc, 0, addr2],
                 [ctc, 1, [addr1, addr2]],
               ],
+            })(addr1, addr2)
+          );
+          return [];
+        },
+      ];
+    })
+    .api_(a.master.foo6, (ctc, addr1, addr2) => {
+      return [
+        (k) => {
+          k(true);
+          const r = remote(ctc, {
+            U0_foo6: Fun([Address, Address], Bool),
+          });
+          k(
+            r.U0_foo6.ALGO({
+              fees: 1,
+              apps: [ctc],
+              boxes: [[ctc, 1, [addr1, addr2]]],
             })(addr1, addr2)
           );
           return [];

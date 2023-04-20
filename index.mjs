@@ -21,6 +21,14 @@ const tokens = [
 
 const stdlib = loadStdlib(process.env);
 
+const showAccountInfo = async (name, acc) => {
+  console.log("");
+  console.log(`Account ${name}:`);
+  console.log(`  Address: ${stdlib.formatAddress(acc.getAddress())}`);
+  console.log(`  Balance: ${await acc.balanceOf()}`);
+  console.log("");
+};
+
 const Test = async (backend) => {
   console.log("Running Test...");
 
@@ -32,6 +40,11 @@ const Test = async (backend) => {
     2,
     startingBalance
   );
+
+  await stdlib.wait(1);
+
+  await showAccountInfo("alice", accAlice);
+  await showAccountInfo("issuer", accIssuer);
 
   console.log("===========================================");
   console.log("Minting tokens...");
@@ -69,6 +82,8 @@ const Test = async (backend) => {
     });
   });
 
+  console.log("Deploying master contract...");
+
   await stdlib.withDisconnect(() =>
     ctcAlice.p.Alice({
       ready: () => {
@@ -78,36 +93,62 @@ const Test = async (backend) => {
     })
   );
 
+  await showAccountInfo("alice", accAlice);
+
   const ctcInfoMaster = await ctcAlice.getInfo();
 
+  const ctcAddressMaster = stdlib.formatAddress(
+    await ctcAlice.getContractAddress()
+  );
+
+  const accMaster = await stdlib.connectAccount({ addr: ctcAddressMaster });
+
+  await showAccountInfo("ctc(master)", accMaster);
+
   console.log({ ctcInfoMaster });
+
+  console.log({ ctcAddressMaster });
 
   const appCount = 1;
 
   const ctcs = [];
+
+  const addrs = [];
 
   // New
 
   for (let i = 0; i < appCount; i++) {
     console.log(`Deploying contract ${i}...`);
     const ctc = await ctcAlice.a.Master.new();
+    const ctc2 = accAlice.contract(childBackend, ctc);
+    const addr = stdlib.formatAddress(await ctc2.getContractAddress());
+    const acc = await stdlib.connectAccount({ addr });
+    ctcs.push(ctc);
+    addrs.push(addr);
     console.log(ctc);
     console.log(stdlib.bigNumberToNumber(ctc));
+    console.log(addr);
     console.log("Contract deployed!");
-    ctcs.push(ctc);
-    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
-    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
   }
 
   // Setup
 
   for (let i = 0; i < appCount; i++) {
     const ctcInfo = ctcs[i];
+    const ctc2 = accAlice.contract(childBackend, ctcInfo);
+    const addr = stdlib.formatAddress(await ctc2.getContractAddress());
+    const acc = await stdlib.connectAccount({ addr });
     console.log(`Setting up contract ${i}...`);
     await ctcAlice.a.Master.setup(ctcInfo);
     console.log("Contract set up!");
     console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
     console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
   }
 
   // Ready
@@ -115,6 +156,8 @@ const Test = async (backend) => {
   for (let i = 0; i < appCount; i++) {
     const ctcInfo = ctcs[i];
     const ctc = accAlice.contract(childBackend, ctcInfo);
+    const addr = stdlib.formatAddress(await ctc.getContractAddress());
+    const acc = await stdlib.connectAccount({ addr });
     await stdlib.withDisconnect(() =>
       ctc.p.Alice({
         getParams: () => ({
@@ -130,6 +173,9 @@ const Test = async (backend) => {
     console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
     console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
     console.log(await ctc.v.state());
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
   }
 
   // Grant issuer
@@ -138,10 +184,16 @@ const Test = async (backend) => {
     const i = 0;
     const ctcInfo = ctcs[i];
     const ctc = accAlice.contract(childBackend, ctcInfo);
+    const addr = stdlib.formatAddress(await ctc.getContractAddress());
+    const acc = await stdlib.connectAccount({ addr });
     await ctc.a.C.grant(accIssuer);
     console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
     console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
     console.log(await ctc.v.state());
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
   } while (0);
 
   // Call foo directly from child
@@ -150,6 +202,8 @@ const Test = async (backend) => {
     const i = 0;
     const ctcInfo = ctcs[i];
     const ctc = accAlice.contract(childBackend, ctcInfo);
+    const addr = stdlib.formatAddress(await ctc.getContractAddress());
+    const acc = await stdlib.connectAccount({ addr });
     console.log(
       `issuer clicks: ${stdlib.bigNumberToNumber(
         fromSome(await ctc.v.clicks(accIssuer), stdlib.bigNumberify(0))
@@ -160,8 +214,18 @@ const Test = async (backend) => {
         fromSome(await ctc.v.clicks(accAlice), stdlib.bigNumberify(0))
       )}`
     );
+    console.log("Issuer calling foo...");
     await ctc.a.U0.foo(accIssuer);
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
+    console.log("Alice calling foo...");
     await ctc.a.U0.foo(accAlice);
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
     console.log(
       `issuer clicks: ${stdlib.bigNumberToNumber(
         fromSome(await ctc.v.clicks(accIssuer), stdlib.bigNumberify(0))
@@ -184,24 +248,118 @@ const Test = async (backend) => {
     const ctcInfo = ctcs[i];
     const ctc = accAlice.contract(masterBackend, ctcInfoMaster);
     const ctc2 = accAlice.contract(childBackend, ctcInfo);
+    const addr = stdlib.formatAddress(await ctc2.getContractAddress());
+    const acc = await stdlib.connectAccount({ addr });
+    console.log("Alice calling foo2 (remote)...");
     await ctc.a.Master.foo2(ctcInfo, accIssuer);
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
+    console.log("Alice calling foo2 (remote)...");
+    await ctc.a.Master.foo2(ctcInfo, accIssuer);
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
     console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
     console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
     console.log(await ctc2.v.state());
     console.log(await ctc2.v.clicks(accAlice));
     console.log(await ctc2.v.clicks(accIssuer));
+    console.log("Alice calling foo3 (remote)...");
     await ctc.a.Master.foo3(ctcInfo, accIssuer, accAlice);
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
     console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
     console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
     console.log(await ctc2.v.state());
     console.log(await ctc2.v.clicks(accAlice));
     console.log(await ctc2.v.clicks(accIssuer));
-    await ctc.a.Master.foo4(ctcInfo, accIssuer, accAlice); // "Error: Network request error. Received status 400: TransactionPool.Remember: transaction FLPXG4MGKITBQ44O23MG6JYTS4MQUI4QVXNBXXYEHM5NLMMLKA7Q: logic eval error: logic eval error: - would result negative. Details: pc=1500, opcodes=dup\nstore 0\n-\n. Details: pc=1264, opcodes=load 16\nitxn_field Applications\nitxn_submit\n
+    console.log("Alice calling foo4...");
+    await ctc2.a.U0.foo4(accIssuer, accAlice);
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
     console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
     console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
     console.log(await ctc2.v.state());
     console.log(await ctc2.v.clicks(accAlice));
     console.log(await ctc2.v.clicks(accIssuer));
+    console.log("Alice calling foo4 (remote)...");
+    try {
+      await ctc.a.Master.foo4(ctcInfo, accIssuer, accAlice); // "Error: Network request error. Received status 400: TransactionPool.Remember: transaction FLPXG4MGKITBQ44O23MG6JYTS4MQUI4QVXNBXXYEHM5NLMMLKA7Q: logic eval error: logic eval error: - would result negative. Details: pc=1500, opcodes=dup\nstore 0\n-\n. Details: pc=1264, opcodes=load 16\nitxn_field Applications\nitxn_submit\n
+    } catch (e) {
+      console.log(e);
+    }
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+    console.log(await ctc2.v.state());
+    console.log(await ctc2.v.clicks(accAlice));
+    console.log(await ctc2.v.clicks(accIssuer));
+    console.log("Alice calling foo4...");
+    await ctc2.a.U0.foo4(accIssuer, accAlice);
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+    console.log(await ctc2.v.state());
+    console.log(await ctc2.v.clicks(accAlice));
+    console.log(await ctc2.v.clicks(accIssuer));
+    console.log("Alice calling foo6 (remote)...");
+    try {
+      await ctc.a.Master.foo6(ctcInfo, accIssuer, accAlice);
+    } catch (e) {
+      console.log(e);
+    }
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+    console.log(await ctc2.v.state());
+    console.log(await ctc2.v.clicks(accAlice));
+    console.log(await ctc2.v.clicks(accIssuer));
+  } while (0);
+
+  do {
+    const i = 0;
+    const ctcInfo = ctcs[i];
+    const ctc = accAlice.contract(masterBackend, ctcInfoMaster);
+    const ctc2 = accAlice.contract(childBackend, ctcInfo);
+    const addr = stdlib.formatAddress(await ctc2.getContractAddress());
+    const acc = await stdlib.connectAccount({ addr });
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+    console.log(await ctc2.v.state());
+    console.log(await ctc2.v.clicks(accAlice));
+    console.log(await ctc2.v.clicks(accIssuer));
+    console.log("Deleting boxes...");
+    try {
+      await ctc2.a.U0.foo5(accIssuer, accAlice);
+      await ctc2.a.U0.foo5(accAlice, accIssuer);
+    } catch (e) {
+      console.log(e);
+    }
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+    console.log(await ctc2.v.state());
+    console.log(await ctc2.v.clicks(accAlice));
+    console.log(await ctc2.v.clicks(accIssuer));
+    await showAccountInfo("alice", accAlice);
+    await showAccountInfo("issuer", accIssuer);
+    await showAccountInfo(`ctc(child${i})`, acc);
+    await showAccountInfo("ctc(master)", accMaster);
   } while (0);
 
   console.log("Goodbye, Alice!");
