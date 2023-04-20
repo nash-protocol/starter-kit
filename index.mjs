@@ -60,7 +60,13 @@ const Test = async (backend) => {
 
   // monitor events
 
-  ["new", "setup", "grant", "ready", "foo"].forEach((el) => {
+  [
+    //"new", 
+    //"setup",
+    "grant",
+    "ready",
+    "foo",
+  ].forEach((el) => {
     ctcAlice.e[el].monitor((ej) => {
       console.log("...........................................");
       console.log(`${el} event!`);
@@ -87,6 +93,19 @@ const Test = async (backend) => {
   const ctcs = [];
 
   // New
+
+  for (let i = 0; i < appCount; i++) {
+    console.log(`Deploying contract ${i}...`);
+    const ctc = await ctcAlice.a.Master.launch(tokObj.v1.id);
+    console.log(ctc);
+    console.log(stdlib.bigNumberToNumber(ctc));
+    console.log("Contract deployed!");
+    ctcs.push(ctc);
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+  }
+
+  return;
 
   for (let i = 0; i < appCount; i++) {
     console.log(`Deploying contract ${i}...`);
@@ -131,6 +150,8 @@ const Test = async (backend) => {
     console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
     console.log(await ctc.v.state());
   }
+
+  return;
 
   // Grant issuer
 
@@ -196,7 +217,13 @@ const Test = async (backend) => {
     console.log(await ctc2.v.state());
     console.log(await ctc2.v.clicks(accAlice));
     console.log(await ctc2.v.clicks(accIssuer));
-    await ctc.a.Master.foo4(ctcInfo, accIssuer, accAlice); // "Error: Network request error. Received status 400: TransactionPool.Remember: transaction FLPXG4MGKITBQ44O23MG6JYTS4MQUI4QVXNBXXYEHM5NLMMLKA7Q: logic eval error: logic eval error: - would result negative. Details: pc=1500, opcodes=dup\nstore 0\n-\n. Details: pc=1264, opcodes=load 16\nitxn_field Applications\nitxn_submit\n
+    //await ctc.a.Master.foo4(ctcInfo, accIssuer, accAlice); // "Error: Network request error. Received status 400: TransactionPool.Remember: transaction FLPXG4MGKITBQ44O23MG6JYTS4MQUI4QVXNBXXYEHM5NLMMLKA7Q: logic eval error: logic eval error: - would result negative. Details: pc=1500, opcodes=dup\nstore 0\n-\n. Details: pc=1264, opcodes=load 16\nitxn_field Applications\nitxn_submit\n
+    console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
+    console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
+    console.log(await ctc2.v.state());
+    console.log(await ctc2.v.clicks(accAlice));
+    console.log(await ctc2.v.clicks(accIssuer));
+    await ctc2.a.U0.foo5(accAlice, accIssuer);
     console.log(stdlib.bigNumberToNumber(await accAlice.balanceOf()));
     console.log(stdlib.formatCurrency(await accAlice.balanceOf()));
     console.log(await ctc2.v.state());
