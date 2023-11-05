@@ -6,8 +6,9 @@ The NP starter kit describes how to launch a NP RApp in minutes. Quickstart assu
 
 commands
 ```bash
-git clone git@github.com:nash-protocol/starter-kit.git 
-cd starter-kit 
+clone_sk() {
+git clone git@github.com:nash-protocol/starter-kit.git ${1} 
+cd ${_} 
 source np.sh 
 np
 ```
