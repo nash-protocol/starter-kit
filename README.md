@@ -11,6 +11,7 @@ git clone git@github.com:nash-protocol/starter-kit.git ${1}
 cd ${_} 
 source np.sh 
 np
+}
 ```
 
 output
